@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "TVOSKeyboard",
-        platforms: [.tvOS(.v13)],
+        platforms: [.tvOS(.v10)],
     products: [
         .library(
             name: "TVOSKeyboard",
