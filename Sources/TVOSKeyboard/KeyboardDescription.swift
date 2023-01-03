@@ -13,7 +13,7 @@ public struct KeyboardDescription {
     public let type        : KeyboardDescriptionType
     public let simbols     : String
     public let label       : String
-    public let spaceName   : String?
+    public var spaceName   : String?
     
     public init(
         code        : String,

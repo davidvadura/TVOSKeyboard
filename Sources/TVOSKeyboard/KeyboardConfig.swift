@@ -128,16 +128,24 @@ public class DefaultKeyboardConfig{
     let defaultFocusedSpaceBackgroundColor: UIColor = .black
     let defaultNormalSpaceBackgroundColor: UIColor = UIColor.white.withAlphaComponent(0.64)
     
-    var defaultDeleteButtonImage: UIImage{
-        let defaultDeleteImageConfig = UIImage.SymbolConfiguration(font: defaultDeleteButtonFont)
-        let defaultdeleteButtonImageName = "delete.left.fill"
-        return UIImage(systemName: defaultdeleteButtonImageName, withConfiguration: defaultDeleteImageConfig) ?? UIImage()
+    var defaultDeleteButtonImage: UIImage {
+        if #available(tvOS 13.0, *) {
+            let defaultDeleteImageConfig = UIImage.SymbolConfiguration(font: defaultDeleteButtonFont)
+            let defaultdeleteButtonImageName = "delete.left.fill"
+            return UIImage(systemName: defaultdeleteButtonImageName, withConfiguration: defaultDeleteImageConfig) ?? UIImage()
+        } else {
+            return UIImage(named: "delete.left.fill") ?? UIImage()
+        }
     }
     
-    var defaultLangButtonImage: UIImage{
-        let defaultLangImageConfig = UIImage.SymbolConfiguration(font: defaultLangButtonFont)
-        let defaultLangButtonImageName = "globe"
-        return UIImage(systemName: defaultLangButtonImageName, withConfiguration: defaultLangImageConfig) ?? UIImage()
+    var defaultLangButtonImage: UIImage {
+        if #available(tvOS 13.0, *) {
+            let defaultLangImageConfig = UIImage.SymbolConfiguration(font: defaultLangButtonFont)
+            let defaultLangButtonImageName = "globe"
+            return UIImage(systemName: defaultLangButtonImageName, withConfiguration: defaultLangImageConfig) ?? UIImage()
+        } else {
+            return UIImage(named: "globe") ?? UIImage()
+        }
     }
     
     let defaultSimbolsLimitOnLine: Int = 26

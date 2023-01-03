@@ -24,7 +24,7 @@ public class KeyboardView: UIView  {
     private var keyboardButtonsSummary: UIStackView!
     private var keyboardTypesStack: UIStackView!
     private var deleteButton: KeyboardButton!
-    private var spaceButton: KeyboardButton!
+    public private(set) var spaceButton: KeyboardButton!
     private var langButton: KeyboardButton!
     private var largeCaseButton: KeyboardButton!
     private var smallCaseButton: KeyboardButton!
@@ -38,7 +38,7 @@ public class KeyboardView: UIView  {
     
     weak var fastTransitionTimer: Timer?
     
-    var isUppercased: Bool = false
+    public internal(set) var isUppercased: Bool = false
     
     var isLangSwitchEnable: Bool{
         return config.keyboardDescriptions.count > 1
@@ -50,6 +50,8 @@ public class KeyboardView: UIView  {
         }
     }
     
+    private var focusedButtonIndex: Int?
+    
     var focusState: KeyboardState!{
         willSet(nextState){
             
@@ -59,6 +61,10 @@ public class KeyboardView: UIView  {
             
         }
         didSet{
+            optionalPanelGuide.isEnabled = true
+            if let button = currentOptionalButton {
+                optionalPanelGuide.preferredFocusEnvironments = [button]
+            }
             
             switch focusState {
             case .lastButtonsRow:
@@ -115,6 +121,8 @@ public class KeyboardView: UIView  {
                     deleteBottomGuide.preferredFocusEnvironments = [deleteButton]
                 }
                 
+                focusedButtonIndex = keyboardButtons.last?.firstIndex(where: { $0.isFocused })
+                
             case .delete:
                 if config.topFocusedElement != nil{
                     deleteTopGuide.preferredFocusEnvironments = [config.topFocusedElement!]
@@ -159,6 +167,8 @@ public class KeyboardView: UIView  {
                 
                 optionalsLeftGuide.preferredFocusEnvironments = []
                 optionalsRightGuide.preferredFocusEnvironments = []
+                optionalPanelGuide.isEnabled = false
+                
             default:
                 break
             }
@@ -166,6 +176,17 @@ public class KeyboardView: UIView  {
         }
     }
     
+    private var currentOptionalButton: KeyboardButton? {
+        let buttons = keyboardOptionalStack.arrangedSubviews.compactMap { $0 as? KeyboardButton }
+        guard buttons.count == 4 else { return nil }
+        
+        switch currentKeyboardDescription.type {
+        case .letters:
+            return isUppercased ? buttons[0] : buttons[1]
+        case .numeric: return buttons[2]
+        case .symbolic: return buttons[3]
+        }
+    }
 
     private var simbolsButtonTitle: String{
         Presets.simbols.label
@@ -207,11 +228,12 @@ public class KeyboardView: UIView  {
     private var buttonsBottomRightGuide: UIFocusGuide?
     private var optionalsLeftGuide: UIFocusGuide!
     private var optionalsRightGuide: UIFocusGuide!
+    private let optionalPanelGuide = UIFocusGuide()
     
     private var backgroundView: UIView = {
         let background = UIView()
-        background.backgroundColor = UIColor.lightGray.withAlphaComponent(0.3)
-        background.layer.cornerRadius = 5
+        background.backgroundColor = UIColor.black.withAlphaComponent(0.3)
+        background.layer.cornerRadius = 10
         background.layer.masksToBounds = true
         return background
     }()
@@ -393,7 +415,14 @@ public class KeyboardView: UIView  {
         let spaces = addSpacer(for: keyboardOptionalStack)
         optionalsLeftGuide = spaces.first.addLayoutGuide()
         optionalsRightGuide = spaces.second.addLayoutGuide()
+        optionalsLeftGuide.isEnabled = false
+        optionalsRightGuide.isEnabled = false
         
+        addLayoutGuide(optionalPanelGuide)
+        optionalPanelGuide.leadingAnchor.constraint(equalTo: keyboardOptionalStack.leadingAnchor).isActive = true
+        optionalPanelGuide.trailingAnchor.constraint(equalTo: keyboardOptionalStack.trailingAnchor).isActive = true
+        optionalPanelGuide.topAnchor.constraint(equalTo: keyboardOptionalStack.topAnchor, constant: -12).isActive = true
+        optionalPanelGuide.bottomAnchor.constraint(equalTo: keyboardOptionalStack.bottomAnchor).isActive = true
     }
     
     private func setUpMainStack(){
@@ -726,21 +755,24 @@ public class KeyboardView: UIView  {
         
         spaceButton.sizeToFit()
         spaceButton.addTarget(self, action: #selector(spaceButtonWasPressed), for: .primaryActionTriggered)
-        
-        spaceButton.contentEdgeInsets = UIEdgeInsets(top: 5,
-                                                      left: 10,
-                                                      bottom: 5,
-                                                      right: 10)
-        
-        
+
         
         spaceButtonStack.addArrangedSubview(spaceButton)
         
         let spaces = addSpacer(for: spaceButtonStack)
         spaceTopGuide = spaces.first.addLayoutGuide()
         spaceBottomGuide = spaces.second.addLayoutGuide()
+        spaceBottomGuide.isEnabled = false
         
-        keyboardMainStack.insertArrangedSubview(spaceButtonStack, at: 0)
+        let spaceSpacerStack = UIStackView()
+        spaceSpacerStack.axis = .horizontal
+        let spacer = UIView()
+        spacer.backgroundColor = .clear
+        spaceSpacerStack.addArrangedSubview(spaceButtonStack)
+        spaceSpacerStack.addArrangedSubview(spacer)
+        spacer.widthAnchor.constraint(equalToConstant: 6).isActive = true
+                
+        keyboardMainStack.insertArrangedSubview(spaceSpacerStack, at: 0)
         
     }
     
@@ -940,6 +972,16 @@ public class KeyboardView: UIView  {
         
         isUppercased = false
         currentKeyboardDescription = prevKeyboardDescription
+    }
+    
+    public func switchToLowercase() -> UIButton? {
+        isUppercased = false
+        currentKeyboardDescription = prevKeyboardDescription
+        
+        if let index = focusedButtonIndex, index < keyboardButtons.last?.count ?? 0 {
+            return keyboardButtons.last![index]
+        }
+        return nil
     }
 }
 

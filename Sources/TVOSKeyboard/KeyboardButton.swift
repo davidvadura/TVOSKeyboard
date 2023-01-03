@@ -41,7 +41,7 @@ open class KeyboardButton: UIButton {
     }
 
     @objc
-    @IBInspectable public var cornerRadius: CGFloat = 5.0 {
+    @IBInspectable public var cornerRadius: CGFloat = 6.0 {
         didSet { updateView() }
     }
 
@@ -251,9 +251,10 @@ open class KeyboardButton: UIButton {
             setImage(focusedImage, for: .focused)
         }
         
-        if extraTitle != nil{
-            transform = CGAffineTransform(scaleX: focusedScaleFactor, y: focusedScaleFactor)
-        }else if isFocused {
+//        if extraTitle != nil{
+//            transform = CGAffineTransform(scaleX: focusedScaleFactor, y: focusedScaleFactor)
+//        }else if isFocused {
+        if isFocused {
             tintColor = focusedTitleColor
             transform = CGAffineTransform(scaleX: focusedScaleFactor, y: focusedScaleFactor)
         }else{

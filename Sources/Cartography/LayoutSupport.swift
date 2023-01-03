@@ -26,13 +26,17 @@ import Foundation
     public extension UIViewController {
         var car_topLayoutGuide : LayoutSupport {
             get {
-                return LayoutSupport(layoutGuide: view.safeAreaLayoutGuide.topAnchor as! UILayoutSupport)
+                if #available(tvOS 11.0, *) {
+                    return LayoutSupport(layoutGuide: view.safeAreaLayoutGuide.topAnchor as! UILayoutSupport)
+                } else {
+                    return LayoutSupport(layoutGuide: view.layoutGuides.first as! UILayoutSupport)
+                }
             }
         }
         
         var car_bottomLayoutGuide : LayoutSupport {
             get {
-                return LayoutSupport(layoutGuide: view.safeAreaLayoutGuide.bottomAnchor as! UILayoutSupport)
+                return LayoutSupport(layoutGuide: view.layoutGuides.first as! UILayoutSupport)
             }
         }
     }

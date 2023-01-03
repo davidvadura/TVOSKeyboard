@@ -28,8 +28,8 @@ public class ExtraImage: UIView {
         return view
     }()
     
-    let borderHeight: CGFloat = 5
-    let borderWidth: CGFloat = 7
+    let borderHeight: CGFloat = 8
+    let borderWidth: CGFloat = 10
     
     public init(text: String, font: UIFont, textColor: UIColor, backgroundColor: UIColor) {
         

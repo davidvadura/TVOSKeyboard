@@ -60,7 +60,7 @@ public final class ViewProxy: SupportsPositioningLayoutProxy, SupportsBaselineLa
 extension ViewProxy {
     #if os(iOS) || os(tvOS)
     public var safeArea: LayoutGuideProxy {
-        if #available(iOS 11, *){
+        if #available(iOS 11, tvOS 11.0, *) {
             return safeAreaLayoutGuide
         } else {
             return layoutMarginsGuide
