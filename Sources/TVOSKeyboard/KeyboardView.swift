@@ -52,6 +52,13 @@ public class KeyboardView: UIView  {
     
     private var focusedButtonIndex: Int?
     
+    public var lastFocusedKey: UIButton? {
+        if let index = focusedButtonIndex, index < keyboardButtons.last?.count ?? 0 {
+            return keyboardButtons.last![index]
+        }
+        return nil
+    }
+    
     var focusState: KeyboardState!{
         willSet(nextState){
             
@@ -978,10 +985,7 @@ public class KeyboardView: UIView  {
         isUppercased = false
         currentKeyboardDescription = prevKeyboardDescription
         
-        if let index = focusedButtonIndex, index < keyboardButtons.last?.count ?? 0 {
-            return keyboardButtons.last![index]
-        }
-        return nil
+        return lastFocusedKey
     }
 }
 
